@@ -1,0 +1,183 @@
+{% macro input(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" name="{{ name }}" value="{{
+        value|e }}" size="{{ size }}">
+{%- endmacro %}
+<!doctype html>
+<head>
+<script src="https://use.fontawesome.com/9c17e94a31.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+
+<script>
+function checkForm() {
+    if ($('#terms').prop('checked') == false) {
+        alert("Please select a computer.");
+        return false;
+    }
+    return true;
+}
+
+function toggle(source) {
+  checkboxes = document.getElementsByName('computerform');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}</script>
+</head>
+<!-- all rights to http://www.w3schools.com/html/tryit.asp?filename=tryhtml_layout_flexbox -->
+<style>
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    text-align: center;
+}
+
+.flex-container > * {
+    padding: 15px;
+    -webkit-flex: 1 100%;
+    flex: 1 100%;
+}
+
+.article {
+    text-align: left;
+}
+
+header {background: black;color:white;}
+footer {background: #aaa;color:white;}
+.nav {background:#eee;}
+
+.nav ul {
+    list-style-type: none;
+ padding: 0;
+}
+   
+.nav ul a {
+ text-decoration: none;
+}
+
+@media all and (min-width: 768px) {
+    .nav {text-align:left;-webkit-flex: 1 auto;flex:1 auto;-webkit-order:1;order:1;}
+    .article {-webkit-flex:5 0px;flex:5 0px;-webkit-order:2;order:2;}
+    footer {-webkit-order:3;order:3;}
+}
+</style>
+
+<div class="flex-container">
+<header>
+  <h1>MDM Tools</h1>
+</header>
+<nav class="nav">
+<ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/listcomputers">List Computers</a></li>
+  <li><a href="/search">Search Computers</a></li>
+</ul>
+</nav>
+<article class="article">
+
+{% if error %}
+<h1>Page Not Found.</h1>
+{% endif %}
+
+{% if not username %}
+<p>Welcome, Login:</a></p>
+{% endif %}
+
+{% if login == "failed" %}
+<p>Failed.</p>
+{% endif %}
+
+{% if login %}
+<form action="/login" method="post">
+<p>Username: {{ input('username') }}</p>
+<p>Passcode: {{ input('password', type='password') }}</p>
+<input type=submit value=Login>
+{% endif %}
+
+{% if welcome %}
+<h1>Welcome {{ username }}.</h1>
+{% endif %}
+
+{% if search %}
+<h3>Seach Computer Names</h3>
+<form method="post" action="/search">
+    Computer Name: <input type="text" name="name" id="name">
+	<button type="submit" class="pure-button pure-button-primary">
+	    <i class="fa fa-search" aria-hidden="true"></i>
+	    Search
+	</button>
+</form>
+{% endif %}
+
+{% if results_data %}
+<h3>{{ command }} sent to:</h3>
+<p><table style="width:80%" class="pure-table pure-table-striped">
+	<thead>
+		<tr >
+			<th>Name</th>
+			<th>ID</th>
+		</tr>
+	</thead>
+{% for row_index in range(results_data['computernames']|count) %}
+	<tr>
+		<td>{{ results_data['computernames'][row_index] }}</td>
+		<td>{{ results_data['computerid'][row_index] }}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if passcode %}
+<p>Passcode must be 6 characters!</p>
+{% endif %}
+
+{% if table_data %}
+<h3>Computers</h3>
+<p><form method={{ method }} action={{ action }} onsubmit="return checkForm();"><table style="width:100%" class="pure-table pure-table-striped">
+	<thead>
+		<tr>
+			<th><input type="checkbox" onClick="toggle(this)" required = "true" name="select" >&nbsp;&nbsp;&nbsp;Select All</th>
+			<th>Name</th>
+			<th>ID</th>
+			<th>MDM Capable</th>
+		</tr>
+	</thead>
+{% for row_index in range(table_data['selectboxes']|count) %}
+	<tr>
+		{% if table_data['mdmcapable'][row_index] == "true" %}
+			<td><input class="pure-checkbox" type="checkbox" id="terms" name="computerform" value={{ table_data['selectboxes'][row_index] }}></td>
+		{% else %}
+			<td><input class="pure-checkbox" type="checkbox" id="terms" name="computerform" value={{ table_data['selectboxes'][row_index] }} disabled></td>
+		{% endif %}
+		<td>{{ table_data['computernames'][row_index] }}</td>
+		<td>{{ table_data['computerid'][row_index] }}</td>
+		<td>{{ table_data['mdmcapable'][row_index] }}</td>
+	</tr>
+{% endfor %}
+</table>
+<p>Enter 6 digit Passcode (Optional, defaults to '000000'): <input type="text" name="passcode" class="pure-input-rounded">
+</br><label for="command">Command:</label>
+<select name="command">
+    <option value="BlankPush">BlankPush</option>
+    <option value="DeviceLock">DeviceLock</option>
+    <option value="EraseDevice">EraseDevice</option>
+</select>
+</br>
+<button type="submit" class="pure-button pure-button-primary">
+    <i class="fa fa-cogs" aria-hidden="true"></i>
+    Send
+</button>
+</form></p></p>
+{% endif %}
+</article>
+
+<footer>
+{% if username %}
+<p>Welcome {{ username }}. <a href ="/logout">Logout.</a></p>
+{% endif %}
+</footer>
+
+</div>
