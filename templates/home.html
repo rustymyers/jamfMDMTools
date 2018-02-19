@@ -125,6 +125,7 @@ footer {background: #aaa;color:white;}
 	<tr>
 		<td>{{ results_data['computernames'][row_index] }}</td>
 		<td>{{ results_data['computerid'][row_index] }}</td>
+		<td>{{ results_data['site'][row_index] }}</td>
 	</tr>
 {% endfor %}
 </table>
@@ -143,6 +144,7 @@ footer {background: #aaa;color:white;}
 			<th>Name</th>
 			<th>ID</th>
 			<th>MDM Capable</th>
+			<th>Site</th>
 		</tr>
 	</thead>
 {% for row_index in range(table_data['selectboxes']|count) %}
@@ -155,6 +157,7 @@ footer {background: #aaa;color:white;}
 		<td>{{ table_data['computernames'][row_index] }}</td>
 		<td>{{ table_data['computerid'][row_index] }}</td>
 		<td>{{ table_data['mdmcapable'][row_index] }}</td>
+		<td>{{ table_data['site'][row_index] }}</td>
 	</tr>
 {% endfor %}
 </table>

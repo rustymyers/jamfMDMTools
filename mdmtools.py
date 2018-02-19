@@ -1,14 +1,10 @@
 import os
 import urllib2
 import base64
-# import jss
 import socket
-import mysql.connector
 import logging
 import ConfigParser
 import xml.etree.ElementTree as ET
-from fractions import Fraction
-from datetime import date, datetime, timedelta
 from flask import Flask, request, render_template, session, redirect, url_for, escape
 
 # API functions:
@@ -63,6 +59,7 @@ def createTableTemplate(computerlist,search):
     computernames = []
     computerid = []
     mdmcapable = []
+    site = []
     
     # For each computer in the list
     for computer in computerlist:
@@ -84,7 +81,10 @@ def createTableTemplate(computerlist,search):
             # If the copmuter is not mdm_capable
             else:
                 mdmcapablebool = "false"
+            computersiteID = responsexml.findtext("general/site/id")
+            computersiteName = responsexml.findtext("general/site/name")
             
+            print computersiteName
             # If we are not running a search, add computer record
             if search == "":
                 # Add computer to lists
@@ -92,6 +92,7 @@ def createTableTemplate(computerlist,search):
                 computernames.append(copmname)
                 computerid.append(compid)
                 mdmcapable.append(mdmcapablebool)
+                site.append(computersiteName)
             else:
                 # Only add computer to list if it matches our search term in lowercase
                 if search.lower() in name.text.lower():
@@ -100,9 +101,10 @@ def createTableTemplate(computerlist,search):
                     computernames.append(copmname)
                     computerid.append(compid)
                     mdmcapable.append(mdmcapablebool)
+                    site.append(computersiteName)
 
     # Send lists as dict for table
-    table_data = {'selectboxes':selectboxes, 'computernames':computernames, 'computerid':computerid, 'mdmcapable':mdmcapable}
+    table_data = {'selectboxes':selectboxes, 'computernames':computernames, 'computerid':computerid, 'mdmcapable':mdmcapable, 'site':site}
     # return render_template('table.html', table_data=table_data, action='/actioncomputers', method='POST')
     return table_data
 
